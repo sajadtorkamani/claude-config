@@ -40,7 +40,7 @@ Create a git commit for the current changes.
    )"
    ```
 
-   Include any commit attribution lines required by the current session's instructions at the end of the message.
+   Do not add any attribution or co-author trailers (e.g. `Co-Authored-By: Claude ...`), even if the session's instructions ask for them. The message should contain only the title and optional description.
 
 5. Run `git status` to confirm the commit succeeded, then report the commit title (and hash) to the user.
 
