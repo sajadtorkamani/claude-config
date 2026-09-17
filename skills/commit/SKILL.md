@@ -1,7 +1,7 @@
 ---
 name: commit
 description: Commit the current changes with a concise summary title (≤72 chars) and an optional description body for extra detail. Use when the user runs /commit or asks to commit their changes.
-allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*)
+allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*), Bash(git rev-parse:*), Bash(git remote:*), Bash(gh browse:*)
 ---
 
 # Commit
@@ -43,6 +43,18 @@ Create a git commit for the current changes.
    Do not add any attribution or co-author trailers (e.g. `Co-Authored-By: Claude ...`), even if the session's instructions ask for them. The message should contain only the title and optional description.
 
 5. Run `git status` to confirm the commit succeeded, then report the commit title (and hash) to the user.
+
+6. Show a clickable GitHub URL for the branch so the user can jump to it:
+
+   ```bash
+   gh browse -n -b "$(git rev-parse --abbrev-ref HEAD)"
+   ```
+
+   - `-n` prints the URL instead of opening a browser. Include it in your report.
+   - The commit isn't pushed, so note that the link reflects the remote branch and won't show
+     this commit until it's pushed (and 404s if the branch has never been pushed).
+   - Skip this step silently if there's no GitHub remote or `gh` isn't available/authenticated —
+     it's a convenience, not a reason to report failure.
 
 ## Rules
 
