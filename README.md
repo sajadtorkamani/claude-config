@@ -14,3 +14,4 @@ git clone git@github.com:sajadtorkamani/claude-config.git ~/code/claude-config
 ## Skills
 
 - `commit`: commits changes with a concise title (≤72 chars) and an optional description.
+- `commit-and-push`: runs `commit`, then pushes the branch to the remote.
