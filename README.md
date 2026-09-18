@@ -9,7 +9,11 @@ git clone git@github.com:sajadtorkamani/claude-config.git ~/code/claude-config
 ~/code/claude-config/install.sh
 ```
 
-`install.sh` symlinks each folder in `skills/` into `~/.claude/skills/`, so edits here take effect immediately. Re-run it after adding a new skill.
+`install.sh` symlinks each folder in `skills/` into `~/.claude/skills/` and `CLAUDE.md` into `~/.claude/CLAUDE.md`, so edits here take effect immediately. Re-run it after adding a new skill.
+
+## CLAUDE.md
+
+`CLAUDE.md` holds the global instructions Claude Code loads for every project on this machine.
 
 ## Skills
 
