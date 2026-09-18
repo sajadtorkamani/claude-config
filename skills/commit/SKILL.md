@@ -20,6 +20,7 @@ Create a git commit for the current changes.
    - If nothing is staged, stage the relevant changed files by name (`git add <paths>`). Avoid `git add -A` / `git add .`.
    - Never stage files that likely contain secrets (`.env`, credentials, keys). Warn the user if such files are changed.
    - If there are no changes, say so and stop.
+   - If it makes sense to split the commit, create a new commit for each logical change.
 
 3. Write the commit message:
    - **Title**: a summary of the changes in the imperative mood (e.g. "Add retry logic to webhook handler").
@@ -56,9 +57,9 @@ Create a git commit for the current changes.
    - Skip this step silently if there's no GitHub remote or `gh` isn't available/authenticated —
      it's a convenience, not a reason to report failure.
 
-## Rules
-
+## Rules 
 - Don't push unless the user asks.
 - Don't amend, skip hooks (`--no-verify`), or change git config.
 - If a pre-commit hook fails, fix the issue if straightforward and create a **new** commit attempt; otherwise report the failure.
 - If the user passes arguments to /commit (e.g. extra context or a desired message), take them into account.
+- Use conventional commit messages (e.g., feat: <message>, docs: message, etc).
