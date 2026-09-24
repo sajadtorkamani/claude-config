@@ -17,6 +17,7 @@ git clone git@github.com:sajadtorkamani/claude-config.git ~/code/claude-config
 
 ## Skills
 
+- `add-wiki-note`: asks for a title and category, then creates the note in `~/code/wiki` and regenerates the index pages.
 - `commit`: commits changes with a concise title (≤72 chars) and an optional description.
 - `commit-and-push`: runs `commit`, then pushes the branch to the remote.
 - `pr-summary`: asks for the base branch and any related PRs, then summarises the branch's commits as markdown for the GitHub PR description.
