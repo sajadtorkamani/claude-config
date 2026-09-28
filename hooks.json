@@ -4,7 +4,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "afplay /System/Library/Sounds/Glass.aiff 2>/dev/null || true # claude-config:sound",
+          "command": "\"$HOME/.claude/bin/notify.sh\" finished # claude-config:notify",
           "async": true
         }
       ]
@@ -15,7 +15,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "afplay /System/Library/Sounds/Funk.aiff 2>/dev/null || true # claude-config:sound",
+          "command": "\"$HOME/.claude/bin/notify.sh\" input # claude-config:notify",
           "async": true
         }
       ]

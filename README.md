@@ -1,6 +1,6 @@
 # claude-config
 
-My personal [Claude Code](https://claude.com/claude-code) skills.
+My personal [Claude Code](https://claude.com/claude-code) config: skills, hooks and global instructions.
 
 ## Install
 
@@ -17,18 +17,36 @@ git clone git@github.com:sajadtorkamani/claude-config.git ~/code/claude-config
 
 ## Hooks
 
-`hooks.json` holds hooks that get merged into `~/.claude/settings.json`. Currently it plays a
-sound when Claude finishes a turn (`Stop`, Glass) and when Claude needs your input (`Notification`,
-Funk). Swap the sounds for anything in `/System/Library/Sounds/`.
+`hooks.json` holds hooks that get merged into `~/.claude/settings.json`. Both currently call
+`bin/notify.sh`, which shows a macOS notification:
 
-It's a merge rather than a symlink because `settings.json` is a live file Claude Code writes to
-(permissions, theme), so each machine keeps its own. Entries carry a `# claude-config:sound`
-marker, so re-running `install.sh` replaces them instead of stacking duplicates — and removing a
-hook here does not remove it from a machine you've already installed on; delete it from that
+| Event | Notification |
+| --- | --- |
+| `Stop` — Claude finished a turn | "Finished — turn complete" |
+| `Notification` — Claude needs you | "Waiting for your input" |
+
+The notification is titled with the project name, so you can tell which repo it came from. That
+name is the git repo's root folder (a subdirectory of the repo still reports the repo), falling
+back to the plain folder name outside a repo. It's read from the `cwd` in the hook payload on
+stdin, falling back to the working directory.
+
+### How it's installed
+
+`install.sh` symlinks `bin/` into `~/.claude/bin/`, so `hooks.json` can name
+`$HOME/.claude/bin/notify.sh` literally rather than hardcoding wherever this repo is cloned.
+
+The hooks are merged into `settings.json` rather than symlinked, because Claude Code writes to
+that file itself (permissions, theme) and each machine needs to keep its own. Entries carry a
+`# claude-config:` marker and the merge strips anything matching that prefix before re-adding,
+so re-running `install.sh` replaces rather than duplicates. The merge only adds and replaces, so
+deleting a hook here won't remove it from a machine already installed on — delete it from that
 machine's `settings.json`.
 
-Requires `jq`, and the sounds are macOS-only (`afplay`). `install.sh` skips this step with a
-message if either is missing.
+Requires `jq`, and it's macOS-only (`osascript`). `install.sh` skips the merge with a message if
+either is missing, and `notify.sh` exits quietly on other platforms.
+
+If notifications don't appear, macOS needs to allow them for your terminal app under System
+Settings → Notifications.
 
 ## Skills
 
