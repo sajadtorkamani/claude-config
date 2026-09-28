@@ -30,6 +30,31 @@ name is the git repo's root folder (a subdirectory of the repo still reports the
 back to the plain folder name outside a repo. It's read from the `cwd` in the hook payload on
 stdin, falling back to the working directory.
 
+### Click to jump back to the IDE
+
+If the project is open in a running JetBrains IDE, clicking the notification brings that project
+forward, and the subtitle names the IDE (e.g. "Claude Code · PhpStorm") so you know clicking will
+do something.
+
+This needs `terminal-notifier`, because `osascript` notifications cannot carry a click action:
+
+```bash
+brew install terminal-notifier
+```
+
+Without it everything still works — you just get a plain, non-clickable banner. macOS will ask
+for notification permission for terminal-notifier the first time.
+
+`bin/detect-jetbrains.py` works out which IDE has the project open. It requires two signals to
+agree: the project is marked `opened="true"` in that product's `recentProjects.xml`, **and** the
+IDE is actually in the process list. Either alone is unreliable — the XML goes stale if an IDE is
+killed rather than quit, and the process list doesn't say what's open. Where several versions
+match, the newest wins. If nothing matches, the notification is simply not clickable.
+
+**Not supported:** focusing the specific terminal tab that triggered the notification. JetBrains
+exposes no external API for addressing terminal tabs, so clicking gets you to the project and no
+further.
+
 ### How it's installed
 
 `install.sh` symlinks `bin/` into `~/.claude/bin/`, so `hooks.json` can name
@@ -42,11 +67,12 @@ so re-running `install.sh` replaces rather than duplicates. The merge only adds 
 deleting a hook here won't remove it from a machine already installed on — delete it from that
 machine's `settings.json`.
 
-Requires `jq`, and it's macOS-only (`osascript`). `install.sh` skips the merge with a message if
-either is missing, and `notify.sh` exits quietly on other platforms.
+Requires `jq`, and it's macOS-only (`osascript`). IDE detection additionally needs `python3`.
+`install.sh` skips the merge with a message if `jq` is missing, and `notify.sh` exits quietly on
+other platforms; every other dependency degrades rather than failing.
 
-If notifications don't appear, macOS needs to allow them for your terminal app under System
-Settings → Notifications.
+If notifications don't appear, macOS needs to allow them for your terminal app (and for
+terminal-notifier, if installed) under System Settings → Notifications.
 
 ## Skills
 
