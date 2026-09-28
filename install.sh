@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Symlinks each skill in this repo into ~/.claude/skills, and CLAUDE.md into ~/.claude.
+# Symlinks each skill in this repo into ~/.claude/skills, and CLAUDE.md into ~/.claude,
+# then merges hooks.json into ~/.claude/settings.json.
 set -euo pipefail
 
 repo_dir="$(cd "$(dirname "$0")" && pwd)"
@@ -29,3 +30,58 @@ done
 if [ -f "$repo_dir/CLAUDE.md" ]; then
   link "$repo_dir/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 fi
+
+# Merge the sound-notification hooks in hooks.json into ~/.claude/settings.json.
+# Merged rather than symlinked: settings.json is a live file Claude Code writes to
+# (permissions, theme), so it must keep whatever is already on this machine.
+install_hooks() {
+  local hooks_file="$repo_dir/hooks.json"
+  local settings="$HOME/.claude/settings.json"
+
+  [ -f "$hooks_file" ] || return 0
+
+  if [ "$(uname -s)" != "Darwin" ]; then
+    echo "Skipped hooks: sounds use afplay, which is macOS-only"
+    return 0
+  fi
+
+  if ! command -v jq > /dev/null 2>&1; then
+    echo "Skipped hooks: jq not installed (brew install jq, then re-run)"
+    return 0
+  fi
+
+  [ -f "$settings" ] || echo '{}' > "$settings"
+
+  if ! jq -e . "$settings" > /dev/null 2>&1; then
+    echo "Skipped hooks: $settings is not valid JSON"
+    return 0
+  fi
+
+  local tmp
+  tmp="$(mktemp)"
+
+  # Entries are tagged with a marker comment so re-running replaces them
+  # instead of stacking up duplicates.
+  jq --slurpfile new "$hooks_file" '
+    def strip_ours:
+      (. // {})
+      | with_entries(
+          .value |= map(
+            select(
+              [ .hooks[]? | .command? // "" | contains("claude-config:sound") ] | any | not
+            )
+          )
+        )
+      | with_entries(select(.value | length > 0));
+
+    .hooks = (
+      (.hooks | strip_ours) as $kept
+      | reduce ($new[0] | to_entries[]) as $e
+          ($kept; .[$e.key] = ((.[$e.key] // []) + $e.value))
+    )
+  ' "$settings" > "$tmp" && mv "$tmp" "$settings"
+
+  echo "Merged hooks into settings.json"
+}
+
+install_hooks
