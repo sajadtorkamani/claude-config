@@ -1,6 +1,6 @@
 ---
 name: delegate-task
-description: Take a task end to end in an isolated git worktree and hand back a draft PR — does the work, commits, pushes, opens a draft PR into the branch you choose, assigns it to you, requests you as reviewer, labels it `claude` and `needs-review`, and writes the PR description. Use whenever the user runs /delegate-task, or asks you to do a piece of work "in a worktree" and open a PR for it, or says to go off and build something and come back with a PR to review.
+description: Take a task end to end in an isolated git worktree and hand back a draft PR — does the work, commits, pushes, opens a draft PR into the branch you choose, assigns it to you, requests you as reviewer, labels it `claude` and `needs-review`, asks Codex to review it, and writes the PR description. Use whenever the user runs /delegate-task, or asks you to do a piece of work "in a worktree" and open a PR for it, or says to go off and build something and come back with a PR to review.
 allowed-tools: AskUserQuestion, Skill, EnterWorktree, ExitWorktree, TodoWrite, Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -11,8 +11,8 @@ the work in a throwaway worktree so their main checkout is never touched.
 
 The whole point is that the user hands off a task and gets back something reviewable. Two things
 follow from that: their working tree must come out exactly as it went in, and the PR must arrive
-fully dressed — draft, assigned, reviewer requested, labelled, described — so there's nothing left
-for them to click.
+fully dressed — draft, assigned, reviewer requested, labelled, described, Codex asked to review —
+so there's nothing left for them to click.
 
 ## Step 0 — Know the task
 
@@ -154,6 +154,16 @@ Then, each as its own command so one failure doesn't block the rest:
   "Review cannot be requested from pull request author". That's expected, not a bug: mention it in
   one line in the report and move on. The PR is already assigned to them, which is what actually
   puts it on their dashboard.
+- **Codex review** — post a comment on the PR so the Codex GitHub app picks it up and reviews the
+  diff before the user does:
+
+  ```bash
+  gh pr comment <url> --body "@codex review"
+  ```
+
+  The body has to be exactly that — the app triggers on the mention, and extra prose around it can
+  stop it firing. If the comment fails, or the Codex app isn't installed on the repo so nothing
+  reacts to it, that's not worth retrying: say so in one line in the report and move on.
 
 Verify the end state with `gh pr view <url> --json isDraft,assignees,reviewRequests,labels` so the
 report reflects what GitHub actually has, not what you asked for.
@@ -167,7 +177,7 @@ Then report, briefly:
 
 - The PR URL and title, and that it's a draft.
 - Base branch and commit count.
-- Which of assignee / reviewer / label actually stuck, and anything that didn't.
+- Which of assignee / reviewer / label / Codex comment actually stuck, and anything that didn't.
 - What you verified (tests run, types checked) and what you couldn't.
 - Any assumptions or unfinished parts — repeat them here even though they're in the PR body; this is
   the bit the user reads first.
@@ -181,8 +191,9 @@ Keep it short. The PR description carries the detail.
   only reason to read from it is copying gitignored config into the worktree.
 - Never force-push, and never mark the PR ready for review — it stays a draft until the user says
   otherwise.
-- Don't merge, don't request review from anyone but the user, and don't add labels beyond `claude`
-  and `needs-review` unless asked.
+- Don't merge, don't request review from any human but the user, and don't add labels beyond
+  `claude` and `needs-review` unless asked. The `@codex review` comment is the one exception — it
+  goes on every delegated PR.
 - No Claude attribution or co-author trailers in commits or the PR body.
 - If the work fails partway, still report where things stand and leave the worktree in place —
   half-finished work the user can inspect beats a silent rollback.
