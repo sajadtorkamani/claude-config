@@ -1,6 +1,6 @@
 ---
 name: delegate-task
-description: Take a task end to end in an isolated git worktree and hand back a draft PR — does the work, commits, pushes, opens a draft PR into the branch you choose, assigns it to you, requests you as reviewer, labels it `claude`, and writes the PR description. Use whenever the user runs /delegate-task, or asks you to do a piece of work "in a worktree" and open a PR for it, or says to go off and build something and come back with a PR to review.
+description: Take a task end to end in an isolated git worktree and hand back a draft PR — does the work, commits, pushes, opens a draft PR into the branch you choose, assigns it to you, requests you as reviewer, labels it `claude` and `needs-review`, and writes the PR description. Use whenever the user runs /delegate-task, or asks you to do a piece of work "in a worktree" and open a PR for it, or says to go off and build something and come back with a PR to review.
 allowed-tools: AskUserQuestion, Skill, EnterWorktree, ExitWorktree, TodoWrite, Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -137,9 +137,17 @@ Use the same title convention as the commit (ticket prefix etc.). Capture the PR
 
 Then, each as its own command so one failure doesn't block the rest:
 
-- **Label** — `gh pr edit <url> --add-label claude`. If it fails because the label doesn't exist in
-  this repo, create it (`gh label create claude --color D93F0B --description "Opened by Claude"`)
-  and retry once.
+- **Labels** — `gh pr edit <url> --add-label claude --add-label needs-review`. GitHub rejects the
+  whole call if either label is missing from the repo, so on failure create the missing ones and
+  retry once:
+
+  ```bash
+  gh label create claude --color D93F0B --description "Opened by Claude"
+  gh label create needs-review --color FBCA04 --description "Waiting on review"
+  ```
+
+  A label that already exists makes `gh label create` fail — that's fine, ignore it and retry the
+  `gh pr edit`.
 - **Reviewer** — `--add-reviewer` takes a literal login and does not understand `@me`, so resolve
   it first: `gh pr edit <url> --add-reviewer "$(gh api user -q .login)"`. GitHub refuses to request
   a review from the PR's own author, so when the user's own token opened the PR this returns
@@ -174,7 +182,7 @@ Keep it short. The PR description carries the detail.
 - Never force-push, and never mark the PR ready for review — it stays a draft until the user says
   otherwise.
 - Don't merge, don't request review from anyone but the user, and don't add labels beyond `claude`
-  unless asked.
+  and `needs-review` unless asked.
 - No Claude attribution or co-author trailers in commits or the PR body.
 - If the work fails partway, still report where things stand and leave the worktree in place —
   half-finished work the user can inspect beats a silent rollback.
