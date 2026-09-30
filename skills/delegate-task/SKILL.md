@@ -52,7 +52,22 @@ Ask this **before** creating the worktree. Everything downstream depends on the 
 ## Step 2 — Create the worktree
 
 Call `EnterWorktree` with a descriptive name derived from the task (e.g. `fix-date-picker`), not a
-random one — the user will see this directory and branch name later.
+random one — the user will see this directory name later.
+
+`EnterWorktree` names the branch after the worktree (e.g. `worktree-fix-date-picker`), which is not
+a name the user wants on a PR. Rename it straight away to a conventional `<type>/<name>` branch:
+
+```bash
+git branch -m <type>/<name>
+```
+
+Pick `<type>` from the nature of the task — `feature/` for new functionality, `bugfix/` for fixes,
+`chore/` for maintenance, tooling and config, `refactor/` for restructuring without behaviour
+change, `docs/` for documentation only. `<name>` is a short kebab-case slug of the task, without the
+`worktree-` prefix (e.g. `bugfix/date-picker-timezone`, `feature/csv-export`). If the repo's existing
+branches (`git branch -r`) follow a different convention, such as a ticket prefix, match that
+instead. If the name is already taken locally or on the remote, add a distinguishing suffix rather
+than reusing it.
 
 The worktree's base ref is governed by the `worktree.baseRef` setting, which usually branches from
 the repo's **default** branch. If the chosen base is anything else, re-point the branch before
