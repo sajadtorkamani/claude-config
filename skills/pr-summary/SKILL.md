@@ -118,6 +118,19 @@ Guidelines:
 URLs stay as URLs. If they picked "None", omit the section entirely. Don't guess at relationships
 the user didn't state — if they gave a number without context, use a neutral "Related to #123".
 
+**Link every reference, everywhere in the summary** — not just in `## Related`. Any PR, issue or
+ticket the text mentions must be a clickable link, never plain text:
+
+- Never write a vague mention like "the front-end PR" or "the API change" without linking it, e.g.
+  `[front-end PR (RQ-frontend#6093)](https://github.com/RQ-Ratings/RQ-frontend/pull/6093)`.
+- Same-repo PRs and issues can be `#123` (GitHub links those). A PR or issue in **another repo**
+  must be `owner/repo#123` or a full markdown link — a bare `#123` would point at this repo.
+- Ticket keys (e.g. `DEV-123`) become links when the tracker's URL is known from the repo, the
+  user, or earlier PRs, e.g. `[DEV-123](https://example.atlassian.net/browse/DEV-123)`.
+- If you need a link you don't have (the other PR isn't open yet), ask the user for it, or say
+  in step 5 that the reference still needs linking once it exists — don't leave it as plain text
+  silently.
+
 ## Step 5 — Report
 
 After the fenced block, add a short line outside it: the base branch, the number of commits
