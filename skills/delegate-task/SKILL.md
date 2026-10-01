@@ -209,6 +209,12 @@ Then report, briefly:
   the bit the user reads first.
 - The worktree path and branch name, so they can jump back in.
 
+End the report with the PR URL on its own line, as the very last thing printed — the full
+`https://github.com/...` URL as plain text (not wrapped in backticks, a code block or markdown link
+syntax), so the terminal renders it as a clickable link the user can open straight away. For
+example, a final line of `PR: https://github.com/<owner>/<repo>/pull/<number>`, written without the
+backticks. Print it even if later steps failed, as long as the PR was created.
+
 Keep it short. The PR description carries the detail.
 
 ## Rules
