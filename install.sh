@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Symlinks each skill in this repo into ~/.claude/skills, and CLAUDE.md into ~/.claude.
+# Symlinks each skill in this repo into ~/.claude/skills, CLAUDE.md into ~/.claude, and AGENTS.md into ~/.codex.
 set -euo pipefail
 
 repo_dir="$(cd "$(dirname "$0")" && pwd)"
@@ -28,4 +28,10 @@ done
 
 if [ -f "$repo_dir/CLAUDE.md" ]; then
   link "$repo_dir/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+fi
+
+# Codex reads ~/.codex/AGENTS.md directly.
+if [ -f "$repo_dir/AGENTS.md" ]; then
+  mkdir -p "$HOME/.codex"
+  link "$repo_dir/AGENTS.md" "$HOME/.codex/AGENTS.md"
 fi

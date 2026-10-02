@@ -9,7 +9,7 @@ git clone git@github.com:sajadtorkamani/claude-config.git ~/code/claude-config
 ~/code/claude-config/install.sh
 ```
 
-`install.sh` symlinks each folder in `skills/` into `~/.claude/skills/` and `CLAUDE.md` into `~/.claude/CLAUDE.md`, so edits here take effect immediately. Re-run it after adding a new skill.
+`install.sh` symlinks each folder in `skills/` into `~/.claude/skills/` `CLAUDE.md` into `~/.claude/CLAUDE.md`, and `AGENTS.md` into `~/.codex/AGENTS.md` (for Codex), so edits here take effect immediately. Re-run it after adding a new skill.
 
 ## AGENTS.md and CLAUDE.md
 
