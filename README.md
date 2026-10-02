@@ -11,9 +11,9 @@ git clone git@github.com:sajadtorkamani/claude-config.git ~/code/claude-config
 
 `install.sh` symlinks each folder in `skills/` into `~/.claude/skills/` and `CLAUDE.md` into `~/.claude/CLAUDE.md`, so edits here take effect immediately. Re-run it after adding a new skill.
 
-## CLAUDE.md
+## AGENTS.md and CLAUDE.md
 
-`CLAUDE.md` holds the global instructions Claude Code loads for every project on this machine.
+`AGENTS.md` holds the global instructions for every project on this machine. Claude Code doesn't read `AGENTS.md` itself, so `CLAUDE.md` just imports it (`@~/code/claude-config/AGENTS.md`). Edit `AGENTS.md`, not `CLAUDE.md`.
 
 ## Skills
 
